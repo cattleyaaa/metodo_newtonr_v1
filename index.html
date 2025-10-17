@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Método de Newton</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #3498db, #2c3e50);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .content {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        
+        .sidebar {
+            flex: 1;
+            min-width: 300px;
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-right: 1px solid #eaeaea;
+        }
+        
+        .main {
+            flex: 2;
+            min-width: 400px;
+            padding: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border 0.3s;
+        }
+        
+        input[type="text"]:focus, input[type="number"]:focus {
+            border-color: #3498db;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+        
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: background-color 0.3s;
+            width: 100%;
+        }
+        
+        button:hover {
+            background-color: #2980b9;
+        }
+        
+        .result-section {
+            margin-top: 30px;
+        }
+        
+        .result-box {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .result-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #2c3e50;
+        }
+        
+        .result-value {
+            font-size: 18px;
+            color: #3498db;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eaeaea;
+        }
+        
+        th {
+            background-color: #3498db;
+            color: white;
+            font-weight: 600;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        tr:hover {
+            background-color: #f1f8ff;
+        }
+        
+        .error {
+            color: #e74c3c;
+            background-color: #fdf0ed;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            border-left: 4px solid #e74c3c;
+        }
+        
+        .instructions {
+            background-color: #e8f4fd;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            font-size: 14px;
+            border-left: 4px solid #3498db;
+        }
+        
+        @media (max-width: 768px) {
+            .content {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                border-right: none;
+                border-bottom: 1px solid #eaeaea;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Calculadora de Método de Newton</h1>
+            <p class="subtitle">Ingresa una función y su derivada para evaluar y calcular aproximaciones</p>
+        </header>
+        
+        <div class="content">
+            <div class="sidebar">
+                <div class="form-group">
+                    <label for="formula1">Función f(x):</label>
+                    <input type="text" id="formula1" value="x**3 - 5*x**2 + 4*x - 7" placeholder="Ej: x**3 - 5*x**2 + 4*x - 7">
+                </div>
+                
+                <div class="form-group">
+                    <label for="formula2">Derivada f'(x):</label>
+                    <input type="text" id="formula2" value="3*x**2 - 10*x + 4" placeholder="Ej: 3*x**2 - 10*x + 4">
+                </div>
+                
+                <div class="form-group">
+                    <label for="eval_x_f">Evaluar en x₀:</label>
+                    <input type="number" id="eval_x_f" value="0" step="0.1">
+                </div>
+                
+                <button id="calculate-btn">Calcular</button>
+                
+                <div class="instructions">
+                    <p><strong>Instrucciones:</strong></p>
+                    <p>1. Ingresa la función f(x) y su derivada f'(x) usando sintaxis de JavaScript.</p>
+                    <p>2. Especifica el valor de x₀ donde deseas evaluar.</p>
+                    <p>3. Haz clic en "Calcular" para ver los resultados.</p>
+                    <p><strong>Nota:</strong> Usa "x" como variable. Ej: x**2 + 2*x + 1</p>
+                </div>
+            </div>
+            
+            <div class="main">
+                <div class="result-section">
+                    <h2>Resultados</h2>
+                    
+                    <div class="result-box">
+                        <div class="result-title">Evaluación de la función:</div>
+                        <div class="result-value" id="result_f">f(0) = -7.000000</div>
+                    </div>
+                    
+                    <div class="result-box">
+                        <div class="result-title">Evaluación de la derivada:</div>
+                        <div class="result-value" id="result_df">f'(0) = 4.000000</div>
+                    </div>
+                    
+                    <div class="result-box">
+                        <div class="result-title">Aproximación a la raíz:</div>
+                        <div class="result-value" id="result_raiz">Aproximación a r = c = 1.750000</div>
+                    </div>
+                    
+                    <h2>Tabla de Iteraciones</h2>
+                    <table id="results-table">
+                        <thead>
+                            <tr>
+                                <th>Iteración</th>
+                                <th>x₀</th>
+                                <th>f(x₀)</th>
+                                <th>f'(x₀)</th>
+                                <th>x₁ = x₀ - f(x₀)/f'(x₀)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-body">
+                            <!-- Las filas se generarán dinámicamente -->
+                        </tbody>
+                    </table>
+                    
+                    <div id="error-message" class="error" style="display: none;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const formula1Input = document.getElementById('formula1');
+            const formula2Input = document.getElementById('formula2');
+            const evalXInput = document.getElementById('eval_x_f');
+            const calculateBtn = document.getElementById('calculate-btn');
+            const resultF = document.getElementById('result_f');
+            const resultDf = document.getElementById('result_df');
+            const resultRaiz = document.getElementById('result_raiz');
+            const tableBody = document.getElementById('table-body');
+            const errorMessage = document.getElementById('error-message');
+            
+            // Función para evaluar expresiones matemáticas
+            function evaluateExpression(expression, x) {
+                try {
+                    // Reemplazar '^' por '**' para potencias
+                    expression = expression.replace(/\^/g, '**');
+                    
+                    // Crear una función segura para evaluar la expresión
+                    const func = new Function('x', 'Math', `return ${expression}`);
+                    
+                    // Evaluar la expresión
+                    return func(x, Math);
+                } catch (error) {
+                    throw new Error(`Error al evaluar la expresión: ${error.message}`);
+                }
+            }
+            
+            // Función para calcular los resultados
+            function calculate() {
+                try {
+                    // Ocultar mensaje de error
+                    errorMessage.style.display = 'none';
+                    
+                    // Obtener valores de entrada
+                    const formula1 = formula1Input.value.trim();
+                    const formula2 = formula2Input.value.trim();
+                    const x0 = parseFloat(evalXInput.value);
+                    
+                    // Validar entradas
+                    if (!formula1 || !formula2) {
+                        throw new Error('Por favor, ingresa ambas fórmulas.');
+                    }
+                    
+                    if (isNaN(x0)) {
+                        throw new Error('Por favor, ingresa un valor válido para x₀.');
+                    }
+                    
+                    // Evaluar f(x0) y f'(x0)
+                    const fx0 = evaluateExpression(formula1, x0);
+                    const dfx0 = evaluateExpression(formula2, x0);
+                    
+                    // Verificar si la derivada es cero
+                    if (Math.abs(dfx0) < 1e-10) {
+                        throw new Error('La derivada es cero. El método de Newton no puede continuar.');
+                    }
+                    
+                    // Calcular la aproximación a la raíz
+                    const x1 = x0 - fx0 / dfx0;
+                    
+                    // Actualizar resultados
+                    resultF.textContent = `f(${x0.toFixed(6)}) = ${fx0.toFixed(6)}`;
+                    resultDf.textContent = `f'(${x0.toFixed(6)}) = ${dfx0.toFixed(6)}`;
+                    resultRaiz.textContent = `Aproximación a r = c = ${x1.toFixed(6)}`;
+                    
+                    // Actualizar tabla
+                    tableBody.innerHTML = '';
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>1</td>
+                        <td>${x0.toFixed(6)}</td>
+                        <td>${fx0.toFixed(6)}</td>
+                        <td>${dfx0.toFixed(6)}</td>
+                        <td>${x1.toFixed(6)}</td>
+                    `;
+                    tableBody.appendChild(row);
+                    
+                } catch (error) {
+                    // Mostrar mensaje de error
+                    errorMessage.textContent = error.message;
+                    errorMessage.style.display = 'block';
+                }
+            }
+            
+            // Calcular al cargar la página
+            calculate();
+            
+            // Agregar evento al botón de calcular
+            calculateBtn.addEventListener('click', calculate);
+            
+            // Calcular al presionar Enter en cualquier campo
+            [formula1Input, formula2Input, evalXInput].forEach(input => {
+                input.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        calculate();
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
